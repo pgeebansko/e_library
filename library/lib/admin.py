@@ -1,3 +1,13 @@
 from django.contrib import admin
+from .models import Speciality, Klas, Subject
+"""
+added superuser
+     name: admin
+     password: pgee2023
+"""
 
-# Register your models here.
+admin.site.register(Klas)
+admin.site.register(Speciality)
+admin.site.register(Subject)
+
+

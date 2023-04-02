@@ -37,6 +37,7 @@ class Subject(models.Model):
                                        help_text='в кой клас се изучава предмета')
     subject_for = models.ManyToManyField(Speciality, verbose_name='Специалност', blank=False,
                                          help_text='за коя специалност се отнася предмета')
+    picture = models.ImageField('Изображение', upload_to='subject_pics', blank=True, help_text='Графична шапка на предмета')
 
     def __str__(self):
         return self.name
