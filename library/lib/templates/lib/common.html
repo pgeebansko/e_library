@@ -45,8 +45,9 @@
                                         {% for cl in classes %}
                                         <a class="dropdown-item py-3"
                                             href="books_by_class/{{cl.id}}/">
-                                            <div class="icon-stack bg-primary-soft text-primary me-4"><i
-                                                    data-feather="book-open"></i></div>
+                                            <div class="icon-stack bg-primary-soft text-primary me-4">
+                                                <i data-feather="book-open"></i>
+                                            </div>
                                             <div>
                                                 {% if cl.class_num == 8 %}
                                                 за {{cl.class_num}}<sup>-ми</sup>&nbsp;&nbsp;клас
@@ -90,7 +91,7 @@
             </main>
         </div>
         <div id="layoutDefault_footer">
-            <footer class="footer pt-10 pb-5 mt-auto bg-light footer-light">
+            <footer class="footer pb-5 mt-auto bg-light footer-light">
                 <div class="container px-5">
                     <div class="row gx-5">
                     </div>

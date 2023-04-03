@@ -14,11 +14,18 @@ def index(request):
 
 class BooksByClass(View):
     def get(self, request, pk):
+        selected_class = Klas.objects.get(id=pk)
+        if selected_class.class_num == 8:
+            class_ttl = '-ми'
+        else:
+            class_ttl = '-ти'
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
         subjects = Subject.objects.order_by('name').filter(class_for=pk)
-        context = {'subjects':subjects,
+        context = {'subjects': subjects,
                    'classes': classes,
                    'professions': professions,
+                   'class_num': selected_class.class_num,
+                   'class_sup': class_ttl,
                    }
         return render(request, 'lib/subjects-overview.html', context)
