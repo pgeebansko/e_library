@@ -32,7 +32,7 @@ class Speciality(models.Model):
 
 # списък предмети
 class Subject(models.Model):
-    name = models.CharField('Име на предмета', max_length=200)
+    name = models.CharField('Име на предмета', max_length=250)
     class_for = models.ManyToManyField(Klas, verbose_name='Клас', blank=False,
                                        help_text='в кой клас се изучава предмета')
     subject_for = models.ManyToManyField(Speciality, verbose_name='Специалност', blank=False,
