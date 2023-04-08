@@ -19,6 +19,7 @@ class BooksByClass(View):
             class_ttl = '-ми'
         else:
             class_ttl = '-ти'
+        # this is a remark
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
         subjects = Subject.objects.order_by('name').filter(class_for=pk)
