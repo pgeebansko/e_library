@@ -52,12 +52,12 @@ class Subject(models.Model):
 # списък теми към предметите
 class Theme(models.Model):
     name = models.CharField('Заглавие на темата', max_length=250)
-    order = models.SmallIntegerField(name='Номер', default=1, blank=False, null=False)
+    order = models.SmallIntegerField(name='Номер', default=1, blank=True, null=False)
     subject = models.ForeignKey(Subject, name='Предемт', null=True, on_delete=models.SET_NULL,
                                 related_name='subject')
 
     def __str__(self):
-        return self.name
+        return self.name+str(self.order)+'/'+str(self.subject)
 
     class Meta:
         verbose_name = 'Тема'
@@ -71,7 +71,7 @@ class Article(models.Model):
     annotation = models.CharField('Кратко описание:', max_length=200)
     content = RichTextField('Съдържание(текст)')
     theme_id = models.ForeignKey(Theme, verbose_name='Тема', on_delete=models.SET_NULL, null=True, blank=False)
-    publish_date = models.DateTimeField('Дата/час на публикуване', default=date.today)
+    publish_date = models.DateField('Дата на публикуване', default=date.today)
     author = models.CharField('Автор', max_length=60)
 
     def __str__(self):

@@ -30,3 +30,19 @@ class BooksByClass(View):
                    'class_sup': class_ttl,
                    }
         return render(request, 'lib/subjects-overview.html', context)
+
+
+class BookThemes(View):
+    def get(self, request, pk):
+        classes = Klas.objects.order_by('class_num')
+        professions = Speciality.objects.order_by('id')
+        book = Subject.objects.get(id=pk)
+        # theme_list = Theme.objects.filter(subject=pk).order_by('order')
+        theme_list = Theme.objects.order_by('id')
+        print(theme_list)
+        context = {'classes': classes,
+                   'professions': professions,
+                   'subject': book,
+                   'theme_list': theme_list,
+                   }
+        return render(request, 'lib/subject-themes.html', context)
