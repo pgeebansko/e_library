@@ -32,6 +32,20 @@ class BooksByClass(View):
         return render(request, 'lib/subjects-overview.html', context)
 
 
+class BooksByProfession(View):
+    def get(self, request, pk):
+        selected_profession = Speciality.objects.get(id=pk)
+        classes = Klas.objects.order_by('class_num')
+        professions = Speciality.objects.order_by('id')
+        subjects = Subject.objects.order_by('name').filter(class_for=pk)
+        context = {'subjects': subjects,
+                   'classes': classes,
+                   'professions': professions,
+                   'profession': selected_profession.name,
+                   }
+        return render(request, 'lib/professions-overview.html', context)
+
+
 class BookThemes(View):
     def get(self, request, pk):
         classes = Klas.objects.order_by('class_num')
