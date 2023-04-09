@@ -2,8 +2,8 @@
 {% load static %}
 {% block page_content %}
                     <!-- Page Header-->
-                    <header class="page-header-ui page-header-ui-dark bg-img-cover overlay overlay-60"
-                            style="background-image: url('{{ subject.picture.url }}')">
+                    <header class="page-header-ui page-header-ui-dark bg-img-cover overlay overlay-20"
+                            style="background-image: url('{{ subject.picture.url }}');margin-top: 6rem">
                         <div class="page-header-ui-content position-relative">
                             <div class="container px-5 text-center">
                                 <div class="row gx-5 justify-content-center">
@@ -18,23 +18,91 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144.54 17.34" preserveAspectRatio="none" fill="currentColor"><path d="M144.54,17.34H0V0H144.54ZM0,0S32.36,17.34,72.27,17.34,144.54,0,144.54,0"></path></svg>
                         </div>
                     </header>
-                   <section class="bg-light py-10">
+                    <section class="bg-light py-10">
                         <div class="container px-5">
-                            <div class="row gx-5 justify-content-center">
-                                <div class="col-lg-10">
-                                    <div class="post-archive-tag">Category 'UI'</div>
-                                    {% for t in theme_list %}
-                                    <a class="post-archive-item" href="#!">
-                                        <h5>{{ t.name}}</h5>
-                                    </a>
-                                    <hr class="my-5" />
-                                    {% endfor %}
+                            <div class="accordion shadow mb-5" id="accordionAuth">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading1">
+                                        <button class="accordion-button p-4"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse1"
+                                                aria-expanded="true"
+                                                aria-controls="collapse1">
+                                            Теми
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse show"
+                                         id="collapse1"
+                                         aria-labelledby="heading1"
+                                         data-bs-parent="#accordionAuth">
+                                        <div class="accordion-body p-4">
+                                            <ul class="list-unstyled mb-0">
+                                                {% for t in theme_list %}
+                                                <li class="mb-2">
+                                                    <a class="post-archive-item" href="#!">{{ t.name}}</a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading2">
+                                        <button class="accordion-button p-4"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse2"
+                                                aria-expanded="true"
+                                                aria-controls="collapse2">
+                                            Допълнителни материали по предмета "{{subject.name}}
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse collapse"
+                                         id="collapse2"
+                                         aria-labelledby="heading2"
+                                         data-bs-parent="#accordionAuth">
+                                        <div class="accordion-body p-4">
+                                            <ul class="list-unstyled mb-0">
+                                                {% for t in theme_list %}
+                                                <li class="mb-2">
+                                                    <a class="post-archive-item" href="#!">{{ t.name}}</a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading3">
+                                        <button class="accordion-button p-4"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse3"
+                                                aria-expanded="true"
+                                                aria-controls="collapse3">
+                                            Връзки към външни ресурси по предмета "{{subject.name}}
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse collapse"
+                                         id="collapse3"
+                                         aria-labelledby="heading3"
+                                         data-bs-parent="#accordionAuth">
+                                        <div class="accordion-body p-4">
+                                            <ul class="list-unstyled mb-0">
+                                                {% for t in theme_list %}
+                                                <li class="mb-2">
+                                                    <a class="post-archive-item" href="#!">{{ t.name}}</a>
+                                                </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="svg-border-rounded text-dark">
-                            <!-- Rounded SVG Border-->
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144.54 17.34" preserveAspectRatio="none" fill="currentColor"><path d="M144.54,17.34H0V0H144.54ZM0,0S32.36,17.34,72.27,17.34,144.54,0,144.54,0"></path></svg>
-                        </div>
                     </section>
+
 {% endblock %}

@@ -52,12 +52,12 @@ class Subject(models.Model):
 # списък теми към предметите
 class Theme(models.Model):
     name = models.CharField('Заглавие на темата', max_length=250)
-    order = models.SmallIntegerField(name='Номер', default=1, blank=True, null=False)
-    subject = models.ForeignKey(Subject, name='Предемт', null=True, on_delete=models.SET_NULL,
+    order = models.SmallIntegerField('Номер', default=1, blank=True, null=False)
+    subject = models.ForeignKey(Subject, verbose_name='Предмет', null=True, on_delete=models.SET_NULL,
                                 related_name='subject')
 
     def __str__(self):
-        return self.name+str(self.order)+'/'+str(self.subject)
+        return self.name
 
     class Meta:
         verbose_name = 'Тема'
