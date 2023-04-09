@@ -1,4 +1,4 @@
-{% extends 'lib/common.html' %}
+﻿{% extends 'lib/common.html' %}
 {% load static %}
 {% block page_content %}
                     <!-- Page Header-->
@@ -9,6 +9,8 @@
                                 <div class="row gx-5 justify-content-center">
                                     <div class="col-lg-8">
                                         <h1 class="page-header-ui-title mb-3">{{subject.name}}</h1>
+                                        <h1 class="page-header-ui-title page-header-ui-text mb-3">{{theme.name}}</h1>
+                                        <h1 class="page-header-ui-title page-header-ui-text small mb-3">{{article.title}}</h1>
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +31,7 @@
                                                 data-bs-target="#collapse1"
                                                 aria-expanded="true"
                                                 aria-controls="collapse1">
-                                            Теми
+                                            <h1>{{ article.title }}</h1>
                                         </button>
                                     </h2>
                                     <div class="accordion-collapse collapse show"
@@ -37,18 +39,25 @@
                                          aria-labelledby="heading1"
                                          data-bs-parent="#accordionAuth">
                                         <div class="accordion-body p-4">
-                                            <ul class="list-unstyled mb-0">
-                                                {% for t in themes %}
-                                                <li class="mb-2">
-                                                    <!-- параметри за формиране на страницата със статии по дадена тема:
-                                                        sb - id на предмет
-                                                        th - id на тема
-                                                    -->
-                                                    <a class="post-archive-item"
-                                                       href="/theme_articles/{{subject.id}}/{{t.id}}/">{{ t.name}}</a>
-                                                </li>
-                                                {% endfor %}
-                                            </ul>
+                                            <div class="container px-5">
+                                                <div class="row gx-5 justify-content-center">
+                                                    <div class="col-lg-10 col-xl-8">
+                                                        <div class="single-post">
+                                                            <div class="small text-gray-500 text-center">
+                                                                <img class="img-fluid mb-2 rounded" src="{{ article.picture.url }}" />
+                                                            </div>
+                                                            <div class="single-post-text my-5">
+                                                                {{ article.content|safe }}
+                                                                <div class="small text-gray-500 text-end">{{ article.author}}/{{ article.publish_date}}</div>
+                                                                <div class="text-center">
+                                                                    <a class="btn btn-transparent-dark"
+                                                                       href="/theme_articles/{{subject.id}}/{{theme.id}}/">Към списъка със статии по темата</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -61,7 +70,7 @@
                                                 data-bs-target="#collapse2"
                                                 aria-expanded="true"
                                                 aria-controls="collapse2">
-                                            Допълнителни материали по предмета "{{subject.name}}"
+                                            Допълнителни материали към статията "{{ article.title }}"
                                         </button>
                                     </h2>
                                     <div class="accordion-collapse collapse collapse"
@@ -88,7 +97,7 @@
                                                 data-bs-target="#collapse3"
                                                 aria-expanded="true"
                                                 aria-controls="collapse3">
-                                            Връзки към външни ресурси по предмета "{{subject.name}}"
+                                            Връзки към външни ресурси относно "{{ article.title }}"
                                         </button>
                                     </h2>
                                     <div class="accordion-collapse collapse collapse"
@@ -99,9 +108,7 @@
                                             <ul class="list-unstyled mb-0">
                                                 {% for l in links %}
                                                 <li class="mb-2">
-                                                    <a class="post-archive-item"
-                                                       href="{{ l.link }}"
-                                                       target="_blank">{{ l.title}}</a>
+                                                    <a class="post-archive-item" href="#!">{{ l.title}}</a>
                                                 </li>
                                                 {% endfor %}
                                             </ul>
@@ -111,5 +118,4 @@
                             </div>
                         </div>
                     </section>
-
 {% endblock %}

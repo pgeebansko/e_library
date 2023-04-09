@@ -37,12 +37,59 @@ class BookThemes(View):
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
         book = Subject.objects.get(id=pk)
-        # theme_list = Theme.objects.filter(subject=pk).order_by('order')
-        theme_list = Theme.objects.order_by('id')
-        print(theme_list)
+        themes = Theme.objects.filter(subject=pk).order_by('order')
+        attachments = Attacment.objects.filter(subject_id=pk).filter(theme_id=None).filter(article_id=None)
+        links = Link.objects.filter(subject_id=pk).filter(theme_id=None).filter(article_id=None)
+        for a in attachments:
+            print(f'{a.title}: {a.subject_id}, {a.theme_id}, {a.article_id}')
+
         context = {'classes': classes,
                    'professions': professions,
                    'subject': book,
-                   'theme_list': theme_list,
+                   'themes': themes,
+                   'attachments': attachments,
+                   'links': links,
                    }
         return render(request, 'lib/subject-themes.html', context)
+
+
+class ThemeArticles(View):
+    def get(self, request, sb, th):
+        classes = Klas.objects.order_by('class_num')
+        professions = Speciality.objects.order_by('id')
+        book = Subject.objects.get(id=sb)
+        theme = Theme.objects.get(id=th)
+        articles = Article.objects.filter(theme_id=th).order_by('order')
+        attachments = Attacment.objects.filter(subject_id=sb).filter(theme_id=th).filter(article_id=None)
+        links = Link.objects.filter(subject_id=sb).filter(theme_id=th).filter(article_id=None)
+
+        context = {'classes': classes,
+                   'professions': professions,
+                   'subject': book,
+                   'theme': theme,
+                   'articles': articles,
+                   'attachments': attachments,
+                   'links': links,
+                   }
+        return render(request, 'lib/theme-articles.html', context)
+
+
+class SingleArticle(View):
+    def get(self, request, sb, th, art):
+        classes = Klas.objects.order_by('class_num')
+        professions = Speciality.objects.order_by('id')
+        book = Subject.objects.get(id=sb)
+        theme = Theme.objects.get(id=th)
+        article = Article.objects.get(id=art)
+        attachments = Attacment.objects.filter(subject_id=sb).filter(theme_id=th).filter(article_id=art)
+        links = Link.objects.filter(subject_id=sb).filter(theme_id=th).filter(article_id=art)
+
+        context = {'classes': classes,
+                   'professions': professions,
+                   'subject': book,
+                   'theme': theme,
+                   'article': article,
+                   'attachments': attachments,
+                   'links': links,
+                   }
+        return render(request, 'lib/article.html', context)

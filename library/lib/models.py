@@ -67,6 +67,7 @@ class Theme(models.Model):
 # списък статии към тема
 class Article(models.Model):
     title = models.CharField('Заглавие', max_length=200)
+    order = models.SmallIntegerField('Номер', default=1, blank=True, null=False)
     picture = models.ImageField('Снимка/графика:', upload_to='article_pics')
     annotation = models.CharField('Кратко описание:', max_length=200)
     content = RichTextField('Съдържание(текст)')
@@ -85,7 +86,7 @@ class Article(models.Model):
 # списък приложения
 class Attacment(models.Model):
     title = models.CharField('Заглавие', max_length=200)
-    attachment = models.FileField('Файл', upload_to='attachments')
+    attachment = models.FileField('Файл', upload_to='attachments/')
     subject_id = models.ForeignKey(Subject, verbose_name='Предмет', on_delete=models.SET_NULL, null=True, blank=False)
     theme_id = models.ForeignKey(Theme, verbose_name='Тема', on_delete=models.SET_NULL, null=True, blank=True)
     article_id = models.ForeignKey(Article, verbose_name='Статия', on_delete=models.SET_NULL, null=True, blank=True)
@@ -101,7 +102,7 @@ class Attacment(models.Model):
 # списък външни връзки
 class Link(models.Model):
     title = models.CharField('Заглавие', max_length=200)
-    link = models.CharField('URL', max_length=200)
+    link = models.URLField('URL', max_length=200)
     subject_id = models.ForeignKey(Subject, verbose_name='Предмет', on_delete=models.SET_NULL, null=True, blank=False)
     theme_id = models.ForeignKey(Theme, verbose_name='Тема', on_delete=models.SET_NULL, null=True, blank=True)
     article_id = models.ForeignKey(Article, verbose_name='Статия', on_delete=models.SET_NULL, null=True, blank=True)

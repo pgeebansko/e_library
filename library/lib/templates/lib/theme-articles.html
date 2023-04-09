@@ -9,6 +9,9 @@
                                 <div class="row gx-5 justify-content-center">
                                     <div class="col-lg-8">
                                         <h1 class="page-header-ui-title mb-3">{{subject.name}}</h1>
+                                        <p class="page-header-ui-text mb-0">
+                                            {{ theme.name }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -29,7 +32,7 @@
                                                 data-bs-target="#collapse1"
                                                 aria-expanded="true"
                                                 aria-controls="collapse1">
-                                            Теми
+                                            Статии
                                         </button>
                                     </h2>
                                     <div class="accordion-collapse collapse show"
@@ -38,14 +41,13 @@
                                          data-bs-parent="#accordionAuth">
                                         <div class="accordion-body p-4">
                                             <ul class="list-unstyled mb-0">
-                                                {% for t in themes %}
+                                                {% for а in articles %}
                                                 <li class="mb-2">
-                                                    <!-- параметри за формиране на страницата със статии по дадена тема:
-                                                        sb - id на предмет
-                                                        th - id на тема
-                                                    -->
-                                                    <a class="post-archive-item"
-                                                       href="/theme_articles/{{subject.id}}/{{t.id}}/">{{ t.name}}</a>
+                                                    <a class="post-archive-item" href="/single_article/{{subject.id}}/{{theme.id}}/{{а.id}}/">
+                                                        <h5>{{ а.title }}</h5>
+                                                        <p>{{ а.annotation }}</p>
+                                                    </a>
+                                                    <hr>
                                                 </li>
                                                 {% endfor %}
                                             </ul>
@@ -61,7 +63,7 @@
                                                 data-bs-target="#collapse2"
                                                 aria-expanded="true"
                                                 aria-controls="collapse2">
-                                            Допълнителни материали по предмета "{{subject.name}}"
+                                            Допълнителни материали  по темата "{{theme.name}}"
                                         </button>
                                     </h2>
                                     <div class="accordion-collapse collapse collapse"
@@ -88,7 +90,7 @@
                                                 data-bs-target="#collapse3"
                                                 aria-expanded="true"
                                                 aria-controls="collapse3">
-                                            Връзки към външни ресурси по предмета "{{subject.name}}"
+                                            Връзки към външни ресурси по темата "{{theme.name}}"
                                         </button>
                                     </h2>
                                     <div class="accordion-collapse collapse collapse"
@@ -99,9 +101,7 @@
                                             <ul class="list-unstyled mb-0">
                                                 {% for l in links %}
                                                 <li class="mb-2">
-                                                    <a class="post-archive-item"
-                                                       href="{{ l.link }}"
-                                                       target="_blank">{{ l.title}}</a>
+                                                    <a class="post-archive-item" href="{{ l.link }}">{{ l.title}}</a>
                                                 </li>
                                                 {% endfor %}
                                             </ul>
@@ -111,5 +111,4 @@
                             </div>
                         </div>
                     </section>
-
 {% endblock %}
