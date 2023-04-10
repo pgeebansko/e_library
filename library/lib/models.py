@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from ckeditor.fields import RichTextField
+from .utils import *
 
 
 # списък класове
@@ -113,3 +114,61 @@ class Link(models.Model):
     class Meta:
         verbose_name = 'Въшен ресурс(link)'
         verbose_name_plural = 'Въшни ресурси(links)'
+
+
+""" 
+        Т Е С Т О В А   С И С Т Е М А 
+"""
+
+
+# Въпроси - формулировка
+class QuestionTextManager(models.Manager):
+    def create_task(self, itm):
+        item = self.create(item=itm)
+        return item
+
+
+class QuestionText(models.Model):
+    item = models.ForeignKey(Theme, on_delete=models.CASCADE, null=True, related_name='question_text')
+    num = models.PositiveSmallIntegerField(default=0, help_text='генерира се автоматично')
+    text = models.TextField('Въпрос', default='', blank=True, help_text='Формулировка (текст) на въпроса')
+    type = models.PositiveSmallIntegerField(choices=TASK_TYPE, default=TYPE1, help_text='тип на въпроса')
+    level = models.PositiveSmallIntegerField(choices=LEVEL_TYPE, default=LEVEL1, help_text='ниво по Блум на въпроса')
+    picture = models.ImageField('Картинка', upload_to='test_pics', blank=True)
+
+    objects = QuestionTextManager()
+
+    def __str__(self):
+        return self.text
+
+    class Meta:
+        verbose_name = 'Въпрос - текст'
+        verbose_name_plural = 'Въпроси - текст'
+
+
+# Въпроси  - опции
+class QuestionItemManager(models.Manager):
+    def create_task(self, task_id):
+        item = self.create(task=task_id)
+        return item
+
+
+class QuestionItem(models.Model):
+    task = models.ForeignKey(QuestionText, on_delete=models.CASCADE, null=True, related_name='options')
+    leading_char = models.CharField('Водещ символ', max_length=4, default='', blank=True, help_text='№ или буква')
+    text = models.CharField('Текст', max_length=200, default='', blank=True,
+                            help_text='Формулировка (текст) на опцията(отговора)')
+    value = models.CharField('Стойност', max_length=20, default='', blank=True, help_text='Отговор - стойност')
+    value_name = models.CharField("Стойност - име", max_length=200, default='', blank=True, help_text='Отговор - име')
+    checked = models.BooleanField('Отговор - маркирано', null=True, help_text='Отговор за опции с маркиране')
+    checked_t = models.BooleanField('Отговор - маркирано', null=True, help_text='генерира се автоматично')
+    value_t = models.CharField('Стойност', max_length=20, default='', blank=True, help_text='генерира се автоматично')
+
+    objects = QuestionItemManager()
+
+    def __str__(self):
+        return f'{self.leading_char} {self.text}'
+
+    class Meta:
+        verbose_name = 'Въпрос  - опция'
+        verbose_name_plural = 'Въпроси - опции'
