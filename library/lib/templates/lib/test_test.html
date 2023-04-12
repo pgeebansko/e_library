@@ -9,19 +9,18 @@
         <div class="card mb-4" v-if="status == 0">
             <!-- Начален прозорец - инструкции -->
             <div class="card-body text-justify">
-{% endvervatim %}
                 <p>Тази страница Ви дава възможност да проверите своите знания по
-                    {% if theme.id == 0 %}
-                        "{{ subject.name}}"
-                    {% else %}
-                        темата "{{theme.name}}" от предмета "{{ subject.name}}"
-                    {% endif%}
+                    <span v-if="theme_id == 0">
+                        "{{ subject_name}}"
+                    </span>
+                    <span v-else>
+                        темата "{{theme_name}}" от предмета "{{ subject_name}}"
+                    </span>
                     чрез тест, който съдържа {{tasks_total}} задачи с различна трудност. За
-{% verbatim %}
                     всеки Ваш отговор ще получите определен брой точки, от 0 до показания в горния десен ъгъл на всяка
                     задача максимален брой. Целта на теста е да се установи равнището на усвоените от Вас знания и умения.
                 </p>
-                <p>Тестовете се генерират като по случаен начин се подбират въпроси от базата данни с изпитни тестови
+                <p>Тестовете се генерират като по случаен начин се подбират въпроси от базата данни с тестови
                     задачи. За да започнете нов тест използвайте бутона "Стартирай тест", който е разположен в десния
                     панел. След генериране на нов тест се извеждат всички въпроси от него. Това дава възможност тестовите
                     задачи да се решават в произволен ред, както и да се коригират вече отбелязаните отговори. По време
@@ -30,10 +29,10 @@
                 </p>
                 <p>Край на теста и оценка на резултата се извиква с бутона "Край на теста". Оценката на теста се определя
                     в зависимост от общия брой получени точки, без да се посочва кои от подадените отговори са правилни
-                    и кои не. Броят на тестовете, които може да генерира един потребител не е ограничен, но всеки следващ път ще бъде
-                    генериран нов, различен от предишните набор от тестови задачи.
+                    и кои не. Броят на тестовете, които може да генерира един потребител не е ограничен, но всеки следващ
+                    път ще бъде генериран нов, различен от предишните набор от тестови задачи.
                 </p>
-                <p>Отбелязването на верния според Вас отговор при задачите с изборен отговор е чрез маркиране (клик с
+                <p>Отбелязването на верния според Вас отговор при задачите с избрoен отговор е чрез маркиране (клик с
                     левия бутон на мишката върху текста на съответния отговор), а за другите типове задачи начинът на
                     отговор се въвежда от клавиатурата в съответното поле. Някои задачи изискват не само познаване на
                     учебното съдържание, но и логическо мислене, затова четете внимателно условията на задачите преди да
@@ -45,6 +44,7 @@
         </div>
         <!-- Тест -->
         <div class="card mb-4" v-if="status == 1">
+            <!-- въпрос -------------------------------- -->
             <div class="card-body">
                 <div class="card card-header-actions mx-auto border-cyan mb-4"
                      v-for="(task, task_idx) in test">
@@ -52,7 +52,7 @@
                         Въпрос № {{task.num}}
                         <!-- точки (ниво) -->
                         <div>
-                           <span class="btn btn-outline-cyan">2 т.</span>
+                           <span class="btn btn-outline-cyan">{{level}}</span>
                         </div>
                     </div>
                     <div class="card-body">
@@ -64,10 +64,10 @@
                                 <div class="col-lg-11">
                                     <div class="custom-control custom-checkbox" v-for="option in task.options">
                                         <input class="custom-control-input"
-                                               :id="'customCheck_'+item.id+'_'+task.id+'_'+option.id"
+                                               :id="'customCheck_'+task.id+'_'+option.id"
                                                type="checkbox" v-model="option.checked_t">
                                         <label class="custom-control-label"
-                                               :for="'customCheck_'+item.id+'_'+task.id+'_'+option.id">
+                                               :for="'customCheck_'+task.id+'_'+option.id">
                                             {{ option.leading_char+'. '+option.text}}
                                         </label>
                                     </div>
@@ -84,10 +84,10 @@
                                 <div class="col-lg-5">
                                     <div class="custom-control custom-checkbox" v-for="option in task.options">
                                         <input class="custom-control-input"
-                                               :id="'customCheck_'+item.id+'_'+task.id+'_'+option.id"
+                                               :id="'customCheck_'+task.id+'_'+option.id"
                                                type="checkbox" v-model="option.checked_t">
                                         <label class="custom-control-label"
-                                               :for="'customCheck_'+item.id+'_'+task.id+'_'+option.id">
+                                               :for="'customCheck_'+task.id+'_'+option.id">
                                             {{ option.leading_char+'. '+option.text}}
                                         </label>
                                     </div>
@@ -111,7 +111,7 @@
                                              v-model="option.value_t">
                                       <div class="input-group-append" >
                                         <span class="input-group-text bg-gray-200" style="min-width:300px"
-                                              :id="'basic-addon_'+item.id+'_'+task.id+'_'+option.id">{{ option.value_name }}</span>
+                                              :id="'basic-addon_'+task.id+'_'+option.id">{{ option.value_name }}</span>
                                       </div>
                                     </div>
                                 </div>
@@ -128,11 +128,11 @@
                                     <div class="row" v-for="option in task.options">
                                          <div class="input-group input-group-sm mb-1">
                                           <input type="text" class="form-control" style="max-width:60px"
-                                                 :aria-describedby="'basic-addon_'+item.id+'_'+task.id+'_'+option.id"
+                                                 :aria-describedby="'basic-addon_'+task.id+'_'+option.id"
                                                  v-model="option.value_t">
                                           <div class="input-group-append" >
                                                 <span class="input-group-text bg-gray-200" style="min-width:300px"
-                                                  :id="'basic-addon_'+item.id+'_'+task.id+'_'+option.id">{{ option.value_name }}</span>
+                                                  :id="'basic-addon_'+task.id+'_'+option.id">{{ option.value_name }}</span>
                                           </div>
                                         </div>
                                     </div>
@@ -161,16 +161,20 @@
                     </div>
                 </div>
             </div>
+        <!-- въпрос -------------------------------- -->
         </div>
         <!-- Оценка -->
         <div class="card mb-4" v-if="status == 2">
-            <div class="card-header"
-                 :class="{'bg-red': points_total<50, 'bg-orange': (points_total>49)&&(points_total<76), 'bg-green': points_total>75}">
+            <div class="card-header">
                 <h3>Резултат:</h3>
             </div>
             <div class="card-body mb-5 mt-5">
                 <hr>
-                <div style="text-align: center"><h1>{{ points_total }}&nbspточки</h1></div>
+                <div style="text-align: center">
+                    <h3>{{ total }} от {{points_total_max}}&nbsp точки</h3>
+                    <h1 :class="{'bg-red': rate<3, 'bg-yellow': (rate>2.99)&&(rate<3.5), 'bg-teal': (rate>3.49)&&(rate<4.5),
+                 'bg-blue': (rate>4.49)&&(rate<5.5), 'bg-green': rate>5.49}">Оценка: {{rate}}</h1>
+                </div>
                 <hr>
             </div>
         </div>
