@@ -1,0 +1,213 @@
+{% extends 'lib/common_h.html' %}
+{% load static %}
+{% block page_content %}
+{% verbatim %}
+
+<div class="row" id="app">
+    <div class="col-lg-8">
+        <!-- Начален екран -->
+        <div class="card mb-4" v-if="status == 0">
+            <!-- Начален прозорец - инструкции -->
+            <div class="card-body text-justify">
+{% endvervatim %}
+                <p>Тази страница Ви дава възможност да проверите своите знания по
+                    {% if theme.id == 0 %}
+                        "{{ subject.name}}"
+                    {% else %}
+                        темата "{{theme.name}}" от предмета "{{ subject.name}}"
+                    {% endif%}
+                    чрез тест, който съдържа {{tasks_total}} задачи с различна трудност. За
+{% verbatim %}
+                    всеки Ваш отговор ще получите определен брой точки, от 0 до показания в горния десен ъгъл на всяка
+                    задача максимален брой. Целта на теста е да се установи равнището на усвоените от Вас знания и умения.
+                </p>
+                <p>Тестовете се генерират като по случаен начин се подбират въпроси от базата данни с изпитни тестови
+                    задачи. За да започнете нов тест използвайте бутона "Стартирай тест", който е разположен в десния
+                    панел. След генериране на нов тест се извеждат всички въпроси от него. Това дава възможност тестовите
+                    задачи да се решават в произволен ред, както и да се коригират вече отбелязаните отговори. По време
+                    на теста се извежда таймер, показащ изминалото време от началото. Времето не се контролира от
+                    програмата.
+                </p>
+                <p>Край на теста и оценка на резултата се извиква с бутона "Край на теста". Оценката на теста се определя
+                    в зависимост от общия брой получени точки, без да се посочва кои от подадените отговори са правилни
+                    и кои не. Броят на тестовете, които може да генерира един потребител не е ограничен, но всеки следващ път ще бъде
+                    генериран нов, различен от предишните набор от тестови задачи.
+                </p>
+                <p>Отбелязването на верния според Вас отговор при задачите с изборен отговор е чрез маркиране (клик с
+                    левия бутон на мишката върху текста на съответния отговор), а за другите типове задачи начинът на
+                    отговор се въвежда от клавиатурата в съответното поле. Някои задачи изискват не само познаване на
+                    учебното съдържание, но и логическо мислене, затова четете внимателно условията на задачите преди да
+                    посочите някой отговор за верен.
+                </p>
+                <p>ПОЖЕЛАВАМЕ ВИ УСПЕШНА РАБОТА!</p>
+
+            </div>
+        </div>
+        <!-- Тест -->
+        <div class="card mb-4" v-if="status == 1">
+            <div class="card-body">
+                <div class="card card-header-actions mx-auto border-cyan mb-4"
+                     v-for="(task, task_idx) in test">
+                    <div class="card-header">
+                        Въпрос № {{task.num}}
+                        <!-- точки (ниво) -->
+                        <div>
+                           <span class="btn btn-outline-cyan">2 т.</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <h4> {{ task.text }}</h4>
+                        <!-- Въпрос тип 1 - затворен без картинка -->
+                        <div v-if="task.type==1">
+                            <div class="row mt-5">
+                                <div class="col-lg-1"></div>
+                                <div class="col-lg-11">
+                                    <div class="custom-control custom-checkbox" v-for="option in task.options">
+                                        <input class="custom-control-input"
+                                               :id="'customCheck_'+item.id+'_'+task.id+'_'+option.id"
+                                               type="checkbox" v-model="option.checked_t">
+                                        <label class="custom-control-label"
+                                               :for="'customCheck_'+item.id+'_'+task.id+'_'+option.id">
+                                            {{ option.leading_char+'. '+option.text}}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Въпрос тип 2 - затворен с картинка -->
+                        <div v-if="task.type==2">
+                            <div class="row mt-5">
+                                <div class="col-lg-5">
+                                    <img class="img-fluid" :src="task.picture">
+                                </div>
+                                <div class="col-lg-1"></div>
+                                <div class="col-lg-5">
+                                    <div class="custom-control custom-checkbox" v-for="option in task.options">
+                                        <input class="custom-control-input"
+                                               :id="'customCheck_'+item.id+'_'+task.id+'_'+option.id"
+                                               type="checkbox" v-model="option.checked_t">
+                                        <label class="custom-control-label"
+                                               :for="'customCheck_'+item.id+'_'+task.id+'_'+option.id">
+                                            {{ option.leading_char+'. '+option.text}}
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-1"></div>
+                            </div>
+                        </div>
+                        <!-- Въпрос тип 3 - Въпрос със съпоставяне -->
+                        <div v-if="task.type==3">
+                            <div class="row mt-5"> </div>
+                            <div class="row" v-for="option in task.options">
+                                <div class="col-lg-1"></div>
+                                <div class="col-lg-4">
+                                    {{ option.leading_char }}. {{ option.text }}
+                                </div>
+                                <div class="col-lg-1"></div>
+                                <div class="col-lg-6">
+                                    <div class="input-group input-group-sm mb-1">
+                                      <input type="text" class="form-control" style="max-width:60px"
+                                             :aria-describedby="'basic-addon_'+item.id+'_'+task.id+'_'+option.id"
+                                             v-model="option.value_t">
+                                      <div class="input-group-append" >
+                                        <span class="input-group-text bg-gray-200" style="min-width:300px"
+                                              :id="'basic-addon_'+item.id+'_'+task.id+'_'+option.id">{{ option.value_name }}</span>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Въпрос тип 4 - съпоставяне от картинка -->
+                        <div v-if="task.type==4">
+                            <div class="row mt-5">
+                                <div class="col-lg-5">
+                                    <img class="img-fluid" :src="task.picture">
+                                </div>
+                                <div class="col-lg-1"></div>
+                                <div class="col-lg-6">
+                                    <div class="row" v-for="option in task.options">
+                                         <div class="input-group input-group-sm mb-1">
+                                          <input type="text" class="form-control" style="max-width:60px"
+                                                 :aria-describedby="'basic-addon_'+item.id+'_'+task.id+'_'+option.id"
+                                                 v-model="option.value_t">
+                                          <div class="input-group-append" >
+                                                <span class="input-group-text bg-gray-200" style="min-width:300px"
+                                                  :id="'basic-addon_'+item.id+'_'+task.id+'_'+option.id">{{ option.value_name }}</span>
+                                          </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Въпрос тип 5 - свободен отговор -->
+                        <div v-if="task.type==5">
+                            <div class="row mt-5"></div>
+                            <div class="row" v-for="(option, idx) in task.options">
+                                <div class="col-lg-2" v-if="idx==0"></div>
+                                <div class="col-lg-10" v-if="idx==0">
+                                    <div class="input-group input-group-sm mb-3">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"
+                                              :id="'basic-addon_'+item.id+'_'+task.id+'_'+option.id">ОТГОВОР:</span>
+                                        </div>
+                                        <input type="text" class="form-control"
+                                             :aria-label="'basic-addon_'+item.id+'_'+task.id+'_'+option.id"
+                                             aria-describedby="inputGroup-sizing-sm"
+                                             v-model="option.value_t">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Оценка -->
+        <div class="card mb-4" v-if="status == 2">
+            <div class="card-header"
+                 :class="{'bg-red': points_total<50, 'bg-orange': (points_total>49)&&(points_total<76), 'bg-green': points_total>75}">
+                <h3>Резултат:</h3>
+            </div>
+            <div class="card-body mb-5 mt-5">
+                <hr>
+                <div style="text-align: center"><h1>{{ points_total }}&nbspточки</h1></div>
+                <hr>
+            </div>
+        </div>
+    </div>
+    <!-- Странично меню -->
+    <div class="col-lg-4">
+        <div class="nav-sticky card" style="position: sticky;">
+            <div class="btn btn-success">
+                <h1 class="page-header-title"><br>
+                    <span class="badge badge-success">
+                    {{ (timer.h<10)?'0'+timer.h:timer.h }}:{{ (timer.m<10)?'0'+timer.m:timer.m }}:{{ (timer.s<10)?'0'+timer.s:timer.s }}
+                    </span>
+                </h1>
+            </div>
+            <div class="mt-5"  style="text-align: center;">
+                <button class="btn btn-outline-success  btn-lg" type="button" v-if="!(status == 1)"
+                        style="text-align: center;" @click="startTest">
+                    &nbsp;Стартирай тест&nbsp;
+                </button>
+                <button class="btn btn-outline-red  btn-lg" type="button" v-if="status == 1"
+                        style="text-align: center;" @click="stopTest">
+                    &nbsp;Край на теста&nbsp;
+                </button>
+            </div>
+            <div class="mt-5">
+                &nbsp;&nbsp;
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endverbatim %}
+
+{% endblock %}
+
+{% block scripts %}
+        <script src="https://unpkg.com/vue@3"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="{% static 'js/test.js' %}"></script>
+{% endblock %}

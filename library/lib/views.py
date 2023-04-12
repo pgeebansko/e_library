@@ -1,6 +1,10 @@
 from django.shortcuts import render
 from django.views.generic.base import View
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
 from .models import *
+from .serializers import *
 
 
 def index(request):
@@ -13,7 +17,8 @@ def index(request):
 
 
 class BooksByClass(View):
-    def get(self, request, pk):
+    @staticmethod
+    def get(request, pk):
         selected_class = Klas.objects.get(id=pk)
         if selected_class.class_num == 8:
             class_ttl = '-ми'
@@ -33,7 +38,8 @@ class BooksByClass(View):
 
 
 class BooksByProfession(View):
-    def get(self, request, pk):
+    @staticmethod
+    def get(request, pk):
         selected_profession = Speciality.objects.get(id=pk)
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
@@ -47,7 +53,8 @@ class BooksByProfession(View):
 
 
 class BookThemes(View):
-    def get(self, request, pk):
+    @staticmethod
+    def get(request, pk):
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
         book = Subject.objects.get(id=pk)
@@ -68,7 +75,8 @@ class BookThemes(View):
 
 
 class ThemeArticles(View):
-    def get(self, request, sb, th):
+    @staticmethod
+    def get(request, sb, th):
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
         book = Subject.objects.get(id=sb)
@@ -89,7 +97,8 @@ class ThemeArticles(View):
 
 
 class SingleArticle(View):
-    def get(self, request, sb, th, art):
+    @staticmethod
+    def get(request, sb, th, art):
         classes = Klas.objects.order_by('class_num')
         professions = Speciality.objects.order_by('id')
         book = Subject.objects.get(id=sb)
@@ -107,3 +116,48 @@ class SingleArticle(View):
                    'links': links,
                    }
         return render(request, 'lib/article.html', context)
+
+
+"""
+            Т Е С Т О В Е 
+"""
+
+
+# С Т Р А Н И Ц И
+#   Списък на всички въпроси от дадена тема
+class Test(View):
+    @staticmethod
+    def get(request, sb, th):
+        subject = Subject.objects.get(id=sb)
+        if th == 0:
+            theme = {'id': 0}
+        else:
+            theme = Theme.objects.get(id=th)
+        tasks_total = 0
+        test_params = TestsSettings.objects.order_by('id')
+        for tp in test_params:
+            if tp.param_name == 'брой въпроси по предмет':
+                tasks_s = int(tp.param_value)
+            elif tp.param_name == 'брой въпроси по тема':
+                tasks_t = int(tp.param_value)
+        if th == 0:
+            tasks_total = tasks_s
+        else:
+            tasks_total = tasks_t
+        context = {'subject': subject,
+                   'theme': theme,
+                   'tasks_total': tasks_total,
+                   }
+        return render(request, 'lib/test_test.html', context)
+
+
+# R E S T   У С Л У Г И
+# Връща списък на всички тестови въпроси по дадена тема или предмет
+class TestSerializerView(APIView):
+    def get(self, request, sb, th):
+        if th == 0:
+            queryset = QuestionText.objects.filter(subject_id=sb).order_by('id')
+        else:
+            queryset = QuestionText.objects.filter(theme_id=th).order_by('id')
+        serializer = QuestionTextSerializer(queryset, many=True, context={"request": request})
+        return Response(serializer.data)

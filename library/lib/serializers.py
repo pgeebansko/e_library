@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Theme, Subject, QuestionText, QuestionItem
+from .models import Theme, Subject, QuestionText, QuestionItem, TestsSettings
 
 """" Сериализатори за тестови въпроси """
 
@@ -89,4 +89,11 @@ class ThemeSerializer(serializers.ModelSerializer):
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
+        fields = "__all__"
+
+
+# Сериализатор Параметри
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestsSettings
         fields = "__all__"

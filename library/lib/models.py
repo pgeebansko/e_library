@@ -129,11 +129,16 @@ class QuestionTextManager(models.Manager):
 
 
 class QuestionText(models.Model):
-    item = models.ForeignKey(Theme, on_delete=models.CASCADE, null=True, related_name='question_text')
+    subject_id = models.ForeignKey(Subject, verbose_name='Предмет', on_delete=models.CASCADE, null=True,
+                                   related_name='question_subject', help_text='Предмет към който се отнася въпроса')
+    theme_id = models.ForeignKey(Theme, verbose_name='Тема', on_delete=models.CASCADE, null=True,
+                                 related_name='question_theme', help_text='Тема към която се отнася въпроса')
     num = models.PositiveSmallIntegerField(default=0, help_text='генерира се автоматично')
     text = models.TextField('Въпрос', default='', blank=True, help_text='Формулировка (текст) на въпроса')
-    type = models.PositiveSmallIntegerField(choices=TASK_TYPE, default=TYPE1, help_text='тип на въпроса')
-    level = models.PositiveSmallIntegerField(choices=LEVEL_TYPE, default=LEVEL1, help_text='ниво по Блум на въпроса')
+    type = models.PositiveSmallIntegerField(verbose_name='Тип', choices=TASK_TYPE, default=TYPE1,
+                                            help_text='тип на въпроса')
+    level = models.PositiveSmallIntegerField(verbose_name='Ниво', choices=LEVEL_TYPE, default=LEVEL1,
+                                             help_text='ниво по Блум на въпроса')
     picture = models.ImageField('Картинка', upload_to='test_pics', blank=True)
 
     objects = QuestionTextManager()
@@ -172,3 +177,16 @@ class QuestionItem(models.Model):
     class Meta:
         verbose_name = 'Въпрос  - опция'
         verbose_name_plural = 'Въпроси - опции'
+
+
+class TestsSettings(models.Model):
+    param_name = models.CharField('Параметър', max_length=50, default='*', blank=False, help_text='Име на параметър')
+    param_value = models.CharField('Стойност', max_length=50, default='*', blank=False,
+                                   help_text='Стойност на параметър')
+
+    def __str__(self):
+        return f'{self.param_name} = {self.param_value}'
+
+    class Meta:
+        verbose_name = 'Параметър'
+        verbose_name_plural = 'Параметри'

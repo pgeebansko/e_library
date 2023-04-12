@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 from django.conf import settings
-from django.contrib import admin
 from django.conf.urls.static import static
 
 urlpatterns = [
@@ -12,6 +11,10 @@ urlpatterns = [
     path('book_themes/<int:pk>/', views.BookThemes.as_view()),
     path('theme_articles/<int:sb>/<int:th>/', views.ThemeArticles.as_view()),
     path('single_article/<int:sb>/<int:th>/<int:art>/', views.SingleArticle.as_view()),
+
+    path('test/<int:sb>/<int:th>/', views.Test.as_view()),
+
+    path('api/test/<int:sb>/<int:th>/', views.TestSerializerView.as_view()),
 ]
 
 if settings.DEBUG:
