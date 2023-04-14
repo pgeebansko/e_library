@@ -113,6 +113,10 @@
                                         <div class="me-3">
                                             <a class="mb-0" href="/test/{{subject.id}}/0/">
                                                 Тест за проверка на знанията по "{{ subject.name}}"</a>
+                                            {% if user.is_active %}
+                                            <a class="mb-0" href="/test/{{subject.id}}/0/">
+                                                Редактиране на Тест за проверка на знанията по "{{ subject.name}}"</a>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

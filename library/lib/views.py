@@ -155,6 +155,7 @@ class Test(View):
 # Връща списък на всички тестови въпроси по дадена тема или предмет
 class TestSerializerView(APIView):
     def get(self, request, sb, th):
+        print('Извикване от страна на сървъра')
         if th == 0:
             queryset = QuestionText.objects.filter(subject_id=sb).order_by('id')
         else:

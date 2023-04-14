@@ -50,6 +50,7 @@ const App = {
         },
         loadTheme(){
             vm = this
+            console.log('извикваме нещото')
             axios.get('/api/test/'+this.subject_id+'/'+this.theme_id+'/')
             .then(function(response){
                 vm.test = response.data[0];
@@ -133,8 +134,8 @@ const App = {
         this.subject_id=$("#subject_id").text();
         this.subject_name=$("#subject_name").text();
         this.tasks_total=$("#tasks_total").text();
-        //this.loadTheme()
-        console.log(this.status)
+        this.loadTheme()
+
     }
 }
 
