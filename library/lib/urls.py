@@ -13,6 +13,7 @@ urlpatterns = [
     path('single_article/<int:sb>/<int:th>/<int:art>/', views.SingleArticle.as_view()),
 
     path('test/<int:sb>/<int:th>/', views.Test.as_view()),
+    path('edit/<int:sb>/<int:th>/', views.Edit.as_view()),
 
     path('api/test/<int:sb>/<int:th>/', views.TestSerializerView.as_view()),
 ]

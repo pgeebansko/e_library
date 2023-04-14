@@ -21,6 +21,7 @@
                     <section class="bg-light py-10">
                         <div class="container px-5">
                             <div class="accordion shadow mb-5" id="accordionAuth">
+                                <!-- Теми -->
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading1">
                                         <button class="accordion-button p-4"
@@ -52,7 +53,7 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                <!-- Attachments -->
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading2">
                                         <button class="accordion-button p-4"
@@ -79,7 +80,7 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                <!-- Links -->
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="heading3">
                                         <button class="accordion-button p-4"
@@ -108,15 +109,45 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Тестове -->
                                 <div class="accordion-item">
-                                    <div class="d-flex align-items-center justify-content-between px-4 py-5">
-                                        <div class="me-3">
-                                            <a class="mb-0" href="/test/{{subject.id}}/0/">
-                                                Тест за проверка на знанията по "{{ subject.name}}"</a>
-                                            {% if user.is_active %}
-                                            <a class="mb-0" href="/test/{{subject.id}}/0/">
-                                                Редактиране на Тест за проверка на знанията по "{{ subject.name}}"</a>
-                                            {% endif %}
+                                    <h2 class="accordion-header" id="heading4">
+                                        <button class="accordion-button p-4"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapse4"
+                                                aria-expanded="true"
+                                                aria-controls="collapse4">
+                                            Тест за проверка на знанията по "{{ subject.name}}"
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse collapse"
+                                         id="collapse4"
+                                         aria-labelledby="heading4"
+                                         data-bs-parent="#accordionAuth">
+                                        <div class="accordion-body p-4">
+                                            <div class="row gx-5">
+                                                <div class="col-xl-4 col-lg-4 col-sm-12"
+                                                     data-aos="fade" style="text-align: right;">
+                                                    <a class="btn fw-500 ms-lg-4 btn-teal"
+                                                       style="width: 200px;"
+                                                       href="/test/{{subject.id}}/0/">
+                                                        Тест
+                                                        <i class="ms-2" data-feather="arrow-right"></i>
+                                                    </a>
+                                                </div>
+                                                <div class="col-xl-4 col-lg-4 col-sm-12"
+                                                     data-aos="fade" style="text-align: right;">
+                                                    {% if user.is_active %}
+                                                    <a class="btn fw-500 ms-lg-4 btn-primary"
+                                                       style="width: 200px;"
+                                                       href="/edit/{{subject.id}}/0/">
+                                                        Редактиране
+                                                        <i class="ms-2" data-feather="arrow-right"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

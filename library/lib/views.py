@@ -124,7 +124,7 @@ class SingleArticle(View):
 
 
 # С Т Р А Н И Ц И
-#   Списък на всички въпроси от дадена тема
+#   Базова страница за гнериране на тест
 class Test(View):
     @staticmethod
     def get(request, sb, th):
@@ -133,8 +133,9 @@ class Test(View):
             theme = {'id': 0}
         else:
             theme = Theme.objects.get(id=th)
-        tasks_total = 0
         test_params = TestsSettings.objects.order_by('id')
+        tasks_s = 0
+        tasks_t = 0
         for tp in test_params:
             if tp.param_name == 'брой въпроси по предмет':
                 tasks_s = int(tp.param_value)
@@ -151,10 +152,39 @@ class Test(View):
         return render(request, 'lib/test_test.html', context)
 
 
+#   Базова страница за редактиране на тест
+class Edit(View):
+    @staticmethod
+    def get(request, sb, th):
+        subject = Subject.objects.get(id=sb)
+        if th == 0:
+            theme = {'id': 0}
+        else:
+            theme = Theme.objects.get(id=th)
+        test_params = TestsSettings.objects.order_by('id')
+        tasks_s = 0
+        tasks_t = 0
+        for tp in test_params:
+            if tp.param_name == 'брой въпроси по предмет':
+                tasks_s = int(tp.param_value)
+            elif tp.param_name == 'брой въпроси по тема':
+                tasks_t = int(tp.param_value)
+        if th == 0:
+            tasks_total = tasks_s
+        else:
+            tasks_total = tasks_t
+        context = {'subject': subject,
+                   'theme': theme,
+                   'tasks_total': tasks_total,
+                   }
+        return render(request, 'lib/test_edit.html', context)
+
+
 # R E S T   У С Л У Г И
 # Връща списък на всички тестови въпроси по дадена тема или предмет
 class TestSerializerView(APIView):
-    def get(self, request, sb, th):
+    @staticmethod
+    def get(request, sb, th):
         print('Извикване от страна на сървъра')
         if th == 0:
             queryset = QuestionText.objects.filter(subject_id=sb).order_by('id')
