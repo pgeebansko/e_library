@@ -21,6 +21,8 @@ urlpatterns = [
     path('api/save_option/<int:opt_id>/<int:qst_id>/', views.QuestionsByThemesSerializerView.as_view()),
     path('api/save_question/', views.TaskSaveQuestionBodyAPIView.as_view()),
     path('api/new_question/', views.TaskNewQuestionBodyAPIView.as_view()),
+    path('api/delete_question/', views.TaskDelTaskAPIView.as_view()),
+    path('api/delete_option/', views.TaskDelItemAPIView.as_view()),
 ]
 
 if settings.DEBUG:

@@ -118,11 +118,11 @@ const App = {
                 }
             this.question.options.splice(idx, 1)
         },
-        deleteTask(idn,lvl){
+        deleteTask(idn/* OK ?? */){
             vm = this
             axios({
                 method:'POST',
-                url:'/api/TaskDelete/',
+                url:'/api/delete_question/',
                 headers:{
                     'X-CSRFToken':CSRF_TOKEN,
                     //'Access-Control-Allow-Origin':'*',
@@ -131,14 +131,11 @@ const App = {
                 },
                 data:{
                     id: idn,
-                    level: lvl,
                 }
             })
             .then(response => {
                 console.log('success - item was deleted');
                 vm.reloadItem()
-                txt = 'Изтрит е въпрос от тема'+vm.theme.num+' ; въпрос id='+idn+')'
-                vm.sendLogRecord(txt)
             })
             .catch(error => {
                 throw("Error: ",error);
@@ -203,11 +200,11 @@ const App = {
                 throw("Error: ",error);
             })
         },
-        save(){
+        save(/* OK ?? */){
             /* 1. премахвам изтритите опции на въпроса*/
             axios({
                 method:'POST',
-                url:'/api/TaskDelItem/',
+                url:'/api/delete_option/',
                 headers:{
                     'X-CSRFToken':CSRF_TOKEN,
                     //'Access-Control-Allow-Origin':'*',
@@ -215,7 +212,6 @@ const App = {
                     'Content-Type': 'application/json',
                 },
                 data:{
-                    level: this.current_level,
                     ids: this.question.deletedOptions,
                 }
             })
@@ -226,7 +222,6 @@ const App = {
             .catch(error => {
                 throw("Error: ",error);
             })
-            /* още код */
         },
         reloadItem(/* OK */){
             vm = this

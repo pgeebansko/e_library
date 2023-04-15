@@ -257,3 +257,28 @@ class TaskNewQuestionBodyAPIView(APIView):
         task = QuestionText.objects.create_task(sb, th)
         task.save()
         return Response(task.id)
+
+
+# Въпрос - премахване на въпрос
+class TaskDelTaskAPIView(APIView):
+    def post(self, request):
+        task_id = request.data['id']
+        QuestionText.objects.filter(id=task_id).delete()
+        return Response(status=201)
+
+
+# Въпрос - премахване на опция към въпрос
+class TaskDelItemAPIView(APIView):
+    def post(self, request):
+        for option in request.data['ids']:
+            QuestionItem.objects.filter(id=option).delete()
+        return Response(status=201)
+
+
+# Въпрос - обновяване на картинка за въпрос от ниво знание
+class TaskQuestionFileAPIView(APIView):
+    def post(self, request):
+        data = QuestionFileSerializer(data=request.data)
+        if data.is_valid():
+            data.save(id=request.data['id'])
+        return Response(status=201)
