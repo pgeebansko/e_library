@@ -148,6 +148,8 @@ class Test(View):
         context = {'subject': subject,
                    'theme': theme,
                    'tasks_total': tasks_total,
+                   'tasks_subject': tasks_s,
+                   'tasks_theme': tasks_t,
                    'header_name': 'ТЕСТ'
                    }
         return render(request, 'lib/test_test.html', context)
@@ -177,6 +179,8 @@ class Edit(View):
         context = {'subject': subject,
                    'theme': theme,
                    'tasks_total': tasks_total,
+                   'tasks_subject': tasks_s,
+                   'tasks_theme': tasks_t,
                    'header_name': 'Тестови въпроси'
                    }
         return render(request, 'lib/test_edit.html', context)

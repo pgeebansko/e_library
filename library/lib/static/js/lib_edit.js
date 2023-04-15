@@ -10,6 +10,8 @@ const App = {
         subject_name: '',
         question_item: 0,
         question_id: 0,
+        tasks_subject: 0,
+        tasks_theme: 0,
 
         editMode: EDIT_NEW_QUESTION,
         current_item: 0,
@@ -238,6 +240,8 @@ const App = {
         this.theme_name=$("#theme_name").text();
         this.subject_id=$("#subject_id").text();
         this.subject_name=$("#subject_name").text();
+        this.tasks_subject=$("#tasks_subject").text();
+        this.tasks_theme=$("#tasks_theme").text();
         this.reloadItem();
     }
 

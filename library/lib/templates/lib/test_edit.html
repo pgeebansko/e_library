@@ -5,6 +5,7 @@
 
 <!-- Modal -->
 <div id="app">
+    <!-- модален прозорец за редактиране на въпрос -->
     <div class="modal fade" id="exampleModalCenter" data-backdrop="static"  tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
             <div class="modal-content">
@@ -217,7 +218,6 @@
             </div>
         </div>
     </div>
-
     <!-- списък на въпросите по теми -->
     <div class="row">
         <div class="col-lg-9">
@@ -370,67 +370,20 @@
         <div class="col-lg-3">
             <div class="nav-sticky card" style="position: sticky;">
                 <div class="card-body mb-n4" v-for="item in themes">
-                    {{ item.name }}
-                    <ul class="nav flex-column mb-2">
-                        <li class="nav-item" v-if="item.knowledge>0">
-                            <a class="nav-link" :href="'#itemknowledge'+item.item">
-                                Знание
-                                <span  class="badge badge-danger" v-if="(item.tasks_knowledge.length < item.knowledge)">
-                                    {{ item.tasks_knowledge.length }} ( мин. {{ item.knowledge }} )
-                                </span>
-                                <span  class="badge badge-warning" v-else-if="(item.tasks_knowledge.length < 3*item.knowledge)">
-                                    {{ item.tasks_knowledge.length }} ( мин. {{ item.knowledge }} )
-                                </span>
-                                <span  class="badge badge-success" v-else>
-                                    {{ item.tasks_knowledge.length }} ( мин. {{ item.knowledge }} )
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item" v-if="item.comprehension>0">
-                            <a class="nav-link" :href="'#itemcomprehension'+item.item">
-                                Разбиране
-                                <span  class="badge badge-danger" v-if="(item.tasks_comprehension.length < item.comprehension)">
-                                    {{ item.tasks_comprehension.length }} ( мин. {{ item.comprehension }} )
-                                </span>
-                                <span  class="badge badge-warning" v-else-if="(item.tasks_comprehension.length < 3*item.comprehension)">
-                                    {{ item.tasks_comprehension.length }} ( мин. {{ item.comprehension }} )
-                                </span>
-                                <span  class="badge badge-success" v-else>
-                                    {{ item.tasks_comprehension.length }} ( мин. {{ item.comprehension }} )
-                                </span>
-                           </a>
-                        </li>
-                        <li class="nav-item" v-if="item.application>0">
-                            <a class="nav-link" :href="'#itemapplication'+item.item">
-                                Приложение
-                                <span  class="badge badge-danger" v-if="(item.tasks_application.length < item.application)">
-                                    {{ item.tasks_application.length }} ( мин. {{ item.application }} )
-                                </span>
-                                <span  class="badge badge-warning" v-else-if="(item.tasks_application.length < 3*item.application)">
-                                    {{ item.tasks_application.length }} ( мин. {{ item.application }} )
-                                </span>
-                                <span  class="badge badge-success" v-else>
-                                    {{ item.tasks_application.length }} ( мин. {{ item.application }} )
-                                </span>
-                            </a>
-                        </li>
-                        <li class="nav-item" v-if="item.analysis>0">
-                            <a class="nav-link" :href="'#itemanalysis'+item.item">
-                                Анализ
-                                <span  class="badge badge-danger" v-if="(item.tasks_analysis.length < item.analysis)">
-                                    {{ item.tasks_analysis.length }} ( мин. {{ item.analysis }} )
-                                </span>
-                                <span  class="badge badge-warning" v-else-if="(item.tasks_analysis.length < 3*item.analysis)">
-                                    {{ item.tasks_analysis.length }} ( мин. {{ item.analysis }} )
-                                </span>
-                                <span  class="badge badge-success" v-else>
-                                    {{ item.tasks_analysis.length }} ( мин. {{ item.analysis }} )
-                                </span>
-                            </a>
-                        </li>
-                    </ul>
+                    <a class="nav-link" :href="'#item'+item.id">
+                        <span style="color: black;">Тема:</span> {{ item.name }}<br>
+                        <span  class="badge badge-danger" v-if="(item.question_theme.length < tasks_theme)">
+                            Създадени въпроси: {{ item.question_theme.length }} ( мин. {{ tasks_theme }} )
+                        </span>
+                        <span  class="badge badge-warning" v-else-if="(item.question_theme.length < 3*tasks_theme)">
+                            Създадени въпроси: {{ item.question_theme.length }} ( мин. {{ tasks_theme }} )
+                        </span>
+                        <span  class="badge badge-success" v-else>
+                            Създадени въпроси: {{ item.question_theme.length }} ( мин. {{ tasks_theme }} )
+                        </span>
+                    </a>
                 </div>
-                        <div class="mb-2">&nbsp;</div>
+                <div class="mb-2">&nbsp;</div>
             </div>
         </div>
     </div>
