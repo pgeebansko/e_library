@@ -5840,7 +5840,7 @@ input[type=button].btn-block {
 }
 
 .custom-control-input {
-  position: absolute;
+  /* position: absolute; */
   left: 0;
   z-index: -1;
   width: 1.15rem;

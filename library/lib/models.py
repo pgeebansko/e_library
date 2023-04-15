@@ -123,8 +123,8 @@ class Link(models.Model):
 
 # Въпроси - формулировка
 class QuestionTextManager(models.Manager):
-    def create_task(self, itm):
-        item = self.create(item=itm)
+    def create_task(self, sb, th):
+        item = self.create(subject_id=sb, theme_id=th)
         return item
 
 

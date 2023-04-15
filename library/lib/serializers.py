@@ -4,6 +4,20 @@ from .models import Theme, Subject, QuestionText, QuestionItem, TestsSettings
 """" Сериализатори за тестови въпроси """
 
 
+# Сериализатор  Тема
+class ThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Theme
+        fields = "__all__"
+
+
+# Сериализатор Предмет
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = "__all__"
+
+
 # опции/отговори към въпроси
 class QuestionItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -76,24 +90,33 @@ class QuestionSaveItemsSerializer(serializers.ModelSerializer):
         return option
 
 
-# Сериализатор Тема
-class ThemeSerializer(serializers.ModelSerializer):
-    questions = QuestionTextSerializer(many=True)
+# Сериализатор Параметри
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestsSettings
+        fields = "__all__"
 
+
+# Сериализатор списък теми по предмет
+class ThemesBySubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Theme
         fields = "__all__"
 
 
-# Сериализатор Предмет
-class SubjectSerializer(serializers.ModelSerializer):
+# въпроси - списък
+class QTSerializer(serializers.ModelSerializer):
+    options = QuestionItemSerializer(many=True)
+
     class Meta:
-        model = Subject
-        fields = "__all__"
+        model = QuestionText
+        fields = '__all__'
 
 
-# Сериализатор Параметри
-class SettingsSerializer(serializers.ModelSerializer):
+# Сериализатор списък въпроси по теми от предмет
+class QuestionsByThemesSerializer(serializers.ModelSerializer):
+    question_theme = QTSerializer(many=True)
+
     class Meta:
-        model = TestsSettings
+        model = Theme
         fields = "__all__"

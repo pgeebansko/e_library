@@ -16,6 +16,11 @@ urlpatterns = [
     path('edit/<int:sb>/<int:th>/', views.Edit.as_view()),
 
     path('api/test/<int:sb>/<int:th>/', views.TestSerializerView.as_view()),
+    path('api/themes/<int:sb>/<int:th>/', views.ThemesBySubjectSerializerView.as_view()),
+    path('api/q_themes/<int:sb>/<int:th>/', views.QuestionsByThemesSerializerView.as_view()),
+    path('api/save_option/<int:opt_id>/<int:qst_id>/', views.QuestionsByThemesSerializerView.as_view()),
+    path('api/save_question/', views.TaskSaveQuestionBodyAPIView.as_view()),
+    path('api/new_question/', views.TaskNewQuestionBodyAPIView.as_view()),
 ]
 
 if settings.DEBUG:

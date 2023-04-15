@@ -148,6 +148,7 @@ class Test(View):
         context = {'subject': subject,
                    'theme': theme,
                    'tasks_total': tasks_total,
+                   'header_name': 'ТЕСТ'
                    }
         return render(request, 'lib/test_test.html', context)
 
@@ -176,6 +177,7 @@ class Edit(View):
         context = {'subject': subject,
                    'theme': theme,
                    'tasks_total': tasks_total,
+                   'header_name': 'Тестови въпроси'
                    }
         return render(request, 'lib/test_edit.html', context)
 
@@ -192,3 +194,66 @@ class TestSerializerView(APIView):
             queryset = QuestionText.objects.filter(theme_id=th).order_by('id')
         serializer = QuestionTextSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
+
+
+# Връща списък на всички теми по даден предмет
+class ThemesBySubjectSerializerView(APIView):
+    @staticmethod
+    def get(request, sb, th):
+        queryset = Theme.objects.filter(subject_id=sb).order_by('id')
+        serializer = ThemesBySubjectSerializer(queryset, many=True, context={"request": request})
+        return Response(serializer.data)
+
+
+# Връща списък на всички въпроси по теми от предмет
+class QuestionsByThemesSerializerView(APIView):
+    @staticmethod
+    def get(request, sb, th):
+        queryset = Theme.objects.filter(subject_id=sb).order_by('order')
+        serializer = QuestionsByThemesSerializer(queryset, many=True, context={"request": request})
+        return Response(serializer.data)
+
+
+# Въпрос - запазване на опциите на въпроса
+class TaskSaveQuestionOptionsAPIView(APIView):
+    def post(self, request, opt_id, qst_id):
+        if opt_id == 0:  # вмъквам нова опция
+            task_id = QuestionText.objects.filter(id=qst_id).get()
+            option = QuestionItem.objects.create_task(task_id)
+            option.leading_char = request.data['leading_char']
+            option.text = request.data['text']
+            option.value = request.data['value']
+            option.value_name = request.data['value_name']
+            option.checked = request.data['checked']
+            option.save()
+        else:
+            option = QuestionSaveItemsSerializer(data=request.data)
+            if option.is_valid():
+                option.save()
+            else:
+                print('error validation: ', option.errors)
+
+        return Response(status=201)
+
+
+# Въпрос - запазване на тялото на въпроса
+class TaskSaveQuestionBodyAPIView(APIView):
+    def post(self, request):
+        data = QuestionSaveTextSerializer(data=request.data)
+        if data.is_valid():
+            data.save()
+        else:
+            print('error validation: ', data.errors)
+        return Response(status=201)
+
+
+# Въпрос - създаване на нов въпрос
+class TaskNewQuestionBodyAPIView(APIView):
+    def post(self, request):
+        subject_id = request.data['subject_id']
+        theme_id = request.data['theme_id']
+        th = Theme.objects.filter(id=theme_id).get()
+        sb = Subject.objects.filter(id=subject_id).get()
+        task = QuestionText.objects.create_task(sb, th)
+        task.save()
+        return Response(task.id)

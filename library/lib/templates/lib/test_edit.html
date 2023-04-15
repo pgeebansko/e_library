@@ -3,209 +3,438 @@
 {% block page_content %}
 {% verbatim %}
 
-<div class="row" id="app">
-    <div class="col-lg-8">
-        <!-- Начален екран -->
-        <div class="card mb-4" v-if="status == 0">
-            <!-- Начален прозорец - инструкции -->
-            <div class="card-body text-justify">
-                <p>Тази страница Ви дава възможност да проверите своите знания по
-                    <span v-if="theme_id == 0">
-                        "{{ subject_name}}"
-                    </span>
-                    <span v-else>
-                        темата "{{theme_name}}" от предмета "{{ subject_name}}"
-                    </span>
-                    чрез тест, който съдържа {{tasks_total}} задачи с различна трудност. За
-                    всеки Ваш отговор ще получите определен брой точки, от 0 до показания в горния десен ъгъл на всяка
-                    задача максимален брой. Целта на теста е да се установи равнището на усвоените от Вас знания и умения.
-                </p>
-                <p>Тестовете се генерират като по случаен начин се подбират въпроси от базата данни с тестови
-                    задачи. За да започнете нов тест използвайте бутона "Стартирай тест", който е разположен в десния
-                    панел. След генериране на нов тест се извеждат всички въпроси от него. Това дава възможност тестовите
-                    задачи да се решават в произволен ред, както и да се коригират вече отбелязаните отговори. По време
-                    на теста се извежда таймер, показащ изминалото време от началото. Времето не се контролира от
-                    програмата.
-                </p>
-                <p>Край на теста и оценка на резултата се извиква с бутона "Край на теста". Оценката на теста се определя
-                    в зависимост от общия брой получени точки, без да се посочва кои от подадените отговори са правилни
-                    и кои не. Броят на тестовете, които може да генерира един потребител не е ограничен, но всеки следващ
-                    път ще бъде генериран нов, различен от предишните набор от тестови задачи.
-                </p>
-                <p>Отбелязването на верния според Вас отговор при задачите с избрoен отговор е чрез маркиране (клик с
-                    левия бутон на мишката върху текста на съответния отговор), а за другите типове задачи начинът на
-                    отговор се въвежда от клавиатурата в съответното поле. Някои задачи изискват не само познаване на
-                    учебното съдържание, но и логическо мислене, затова четете внимателно условията на задачите преди да
-                    посочите някой отговор за верен.
-                </p>
-                <p>ПОЖЕЛАВАМЕ ВИ УСПЕШНА РАБОТА!</p>
-
-            </div>
-        </div>
-        <!-- Тест -->
-        <div class="card mb-4" v-if="status == 1">
-            <!-- въпрос -------------------------------- -->
-            <div class="card-body">
-                <div class="card card-header-actions mx-auto border-cyan mb-4"
-                     v-for="(task, task_idx) in test">
-                    <div class="card-header">
-                        Въпрос № {{task.num}}
-                        <!-- точки (ниво) -->
-                        <div>
-                           <span class="btn btn-outline-cyan">{{level}}</span>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <h4> {{ task.text }}</h4>
-                        <!-- Въпрос тип 1 - затворен без картинка -->
-                        <div v-if="task.type==1">
-                            <div class="row mt-5">
-                                <div class="col-lg-1"></div>
-                                <div class="col-lg-11">
-                                    <div class="custom-control custom-checkbox" v-for="option in task.options">
-                                        <input class="custom-control-input"
-                                               :id="'customCheck_'+task.id+'_'+option.id"
-                                               type="checkbox" v-model="option.checked_t">
-                                        <label class="custom-control-label"
-                                               :for="'customCheck_'+task.id+'_'+option.id">
-                                            {{ option.leading_char+'. '+option.text}}
-                                        </label>
-                                    </div>
+<!-- Modal -->
+<div id="app">
+    <div class="modal fade" id="exampleModalCenter" data-backdrop="static"  tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">{{ editMode }}</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card card-header-actions mx-auto mb-4"
+                         :class="{'border-cyan': question.level==1,
+                                  'border-blue': question.level==2,
+                                  'border-purple': question.level==3,
+                                  'border-pink': question.level==4,
+                                  }">
+                        <div class="card-header">
+                            Въпрос #{{ question.id }}
+                            <!-- тип на въпроса -->
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle"
+                                        :class="{'btn-outline-cyan': question.level==1,
+                                                'btn-outline-blue': question.level==2,
+                                                'btn-outline-purple': question.level==3,
+                                                'btn-outline-pink': question.level==4,
+                                                }"id="dropdownMenuButtonM"
+                                        type="button"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    Тип на въпроса
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right bg-gray-400" aria-labelledby="dropdownMenuButtonM">
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.type=1">
+                                        Въпрос от затворен тип с един или два верни отговора
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.type=2">
+                                        Въпрос от затворен тип с един или два верни отговора с картинка
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.type=3">
+                                        Въпрос със съпоставяне
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.type=4">
+                                        Въпрос за съпоставяне на елементи от картинка със зададени опции
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.type=5">
+                                        Въпрос с отворен отговор, който във формулировката си съдържа отговора или
+                                        &nbsp;<br>еднозначно го определя и/или предполага
+                                    </a>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Въпрос тип 2 - затворен с картинка -->
-                        <div v-if="task.type==2">
-                            <div class="row mt-5">
-                                <div class="col-lg-5">
-                                    <img class="img-fluid" :src="task.picture">
+                            <!-- тип на въпроса -->
+                            <div class="dropdown">
+                                <button class="btn dropdown-toggle"
+                                        :class="{'btn-outline-cyan': question.level==1,
+                                                'btn-outline-blue': question.level==2,
+                                                'btn-outline-purple': question.level==3,
+                                                'btn-outline-pink': question.level==4,
+                                                }"
+                                        id="dropdownMenuButtonL"
+                                        type="button"
+                                        data-toggle="dropdown"
+                                        aria-haspopup="true"
+                                        aria-expanded="false">
+                                    Ниво по Блум - "{{level_name}}"
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right bg-gray-400" aria-labelledby="dropdownMenuButtonL">
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.level=1; level_name='Знание'">
+                                        'Знание'
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.level=2; level_name='Разбиране'">
+                                        'Разбиране'
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.level=3; level_name='Приложение'">
+                                        'Приложение'
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item dropdown-notifications-item" type="button" @click="question.level=4; level_name='Анализ'">
+                                        'Анализ'
+                                    </a>
                                 </div>
-                                <div class="col-lg-1"></div>
-                                <div class="col-lg-5">
-                                    <div class="custom-control custom-checkbox" v-for="option in task.options">
-                                        <input class="custom-control-input"
-                                               :id="'customCheck_'+task.id+'_'+option.id"
-                                               type="checkbox" v-model="option.checked_t">
-                                        <label class="custom-control-label"
-                                               :for="'customCheck_'+task.id+'_'+option.id">
-                                            {{ option.leading_char+'. '+option.text}}
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-lg-1"></div>
+                            </div>
+                            <!-- точки (ниво) -->
+                            <div>
+                               <span
+                                       class="btn"
+                                       :class="{'btn-outline-cyan': question.level==1,
+                                                'btn-outline-blue': question.level==2,
+                                                'btn-outline-purple': question.level==3,
+                                                'btn-outline-pink': question.level==4,
+                                                }">
+                                   {{2*question.level}} т.</span>
                             </div>
                         </div>
-                        <!-- Въпрос тип 3 - Въпрос със съпоставяне -->
-                        <div v-if="task.type==3">
-                            <div class="row mt-5"> </div>
-                            <div class="row" v-for="option in task.options">
-                                <div class="col-lg-1"></div>
+                        <div class="card-body">
+                            <!-- Картинка -->
+                            <label v-if="(question.type==2)||(question.type==4)">Снимка/Схема/Диаграма:</label>
+                            <div class="row" v-if="(question.type==2)||(question.type==4)">
+                                <div class="col-lg-8">
+                                    <img v-if="question.picture" :src="question.picture" width="360">
+                                </div>
                                 <div class="col-lg-4">
-                                    {{ option.leading_char }}. {{ option.text }}
-                                </div>
-                                <div class="col-lg-1"></div>
-                                <div class="col-lg-6">
-                                    <div class="input-group input-group-sm mb-1">
-                                      <input type="text" class="form-control" style="max-width:60px"
-                                             :aria-describedby="'basic-addon_'+item.id+'_'+task.id+'_'+option.id"
-                                             v-model="option.value_t">
-                                      <div class="input-group-append" >
-                                        <span class="input-group-text bg-gray-200" style="min-width:300px"
-                                              :id="'basic-addon_'+task.id+'_'+option.id">{{ option.value_name }}</span>
-                                      </div>
+                                    <div class="form-group">
+                                        <label for="exampleFormControlFile1">графичен файл (.png; .jpg; .bmp)</label>
+                                        <input type="file"
+                                               class="form-control-file"
+                                               id="exampleFormControlFile1"
+                                               @change="onImageChange($event)">
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Въпрос тип 4 - съпоставяне от картинка -->
-                        <div v-if="task.type==4">
-                            <div class="row mt-5">
-                                <div class="col-lg-5">
-                                    <img class="img-fluid" :src="task.picture">
+                            <!-- Формулировка на въпроса -->
+                            <div class="form-group mb-2">
+                                <label for="exampleFormControlTextarea1">Формулировка на въпроса:</label>
+                                <textarea class="form-control" id="exampleFormControlTextarea1" rows="5" v-model="question.text"> </textarea>
+                            </div>
+                            <!-- Отговори -->
+                            <label v-if="question.type==3">Редове:</label>
+                            <label v-else-if="question.type==4">Опции:</label>
+                            <label v-else>Отговори:</label>
+                            <div class="card  card-header-actions mb-3" v-for="(option, idx) in question.options">
+                                <!-- Отговор -->
+                                <div class="card-header">
+                                    <h3 v-if="question.type==3">Ред {{idx + 1}}</h3>
+                                    <h3 v-else-if="question.type==4">Опция {{idx + 1}}</h3>
+                                    <h3 v-else="question.type==4">Отговор {{idx + 1}}</h3>
+                                    <div>
+                                        <button class="btn btn-outline-danger" type="button" @click="deleteOption(idx)">Премахни</button>
+                                    </div>
                                 </div>
-                                <div class="col-lg-1"></div>
-                                <div class="col-lg-6">
-                                    <div class="row" v-for="option in task.options">
-                                         <div class="input-group input-group-sm mb-1">
-                                          <input type="text" class="form-control" style="max-width:60px"
-                                                 :aria-describedby="'basic-addon_'+task.id+'_'+option.id"
-                                                 v-model="option.value_t">
-                                          <div class="input-group-append" >
-                                                <span class="input-group-text bg-gray-200" style="min-width:300px"
-                                                  :id="'basic-addon_'+task.id+'_'+option.id">{{ option.value_name }}</span>
-                                          </div>
+                                <div class="card-body">
+                                    <!-- Отговор  Варианти 1 и 2 - Въпрос от затворен тип със или без картинка -->
+                                    <div class="row" v-if="question.type<3">
+                                        <div class="form-group col-lg-2">
+                                            <label for="leading_char">№/буква</label>
+                                            <input type="text" class="form-control" id="leading_char" maxlength="4" size="4" v-model="option.leading_char">
+                                        </div>
+
+                                        <div class="custom-control custom-checkbox col-lg-2 align-items-end" style="margin-top: 2.5rem;">
+                                            <input class="custom-control-input" :id="'customCheck'+idx" type="checkbox" v-model="option.checked">
+                                            <label class="custom-control-label" :for="'customCheck'+idx">вярно</label>
+                                        </div>
+                                        <div class="form-group col-lg-8">
+                                            <label for="text">текст</label>
+                                            <input type="text" class="form-control" id="text" v-model="option.text">
+                                        </div>
+                                    </div>
+                                    <!-- Отговор  Вариант 3 - Въпрос за съпоставяне -->
+                                    <div class="row" v-else-if="question.type==3">
+                                        <div class="form-group col-lg-2">
+                                            <label for="leading_char3">№/буква</label>
+                                            <input type="text" class="form-control" id="leading_char3" maxlength="4" size="4" v-model="option.leading_char">
+                                        </div>
+                                        <div class="form-group col-lg-3">
+                                            <label for="text3">текст</label>
+                                            <input type="text" class="form-control" id="text3" v-model="option.text">
+                                        </div>
+                                        <div class="form-group col-lg-1"></div>
+                                        <div class="form-group col-lg-2">
+                                            <label for="value3">отговор</label>
+                                            <input type="text" class="form-control" id="value3" v-model="option.value">
+                                        </div>
+                                        <div class="form-group col-lg-4">
+                                            <label for="valueName3">опция</label>
+                                            <input type="text" class="form-control" id="valueName3" v-model="option.value_name">
+                                        </div>
+                                    </div>
+                                    <!-- Отговор  Вариант 4 - Въпрос за съпоставяне от картинка -->
+                                    <div class="row" v-else-if="question.type==4">
+                                        <div class="form-group col-lg-1"></div>
+                                        <div class="form-group col-lg-2">
+                                            <label for="value4">отговор</label>
+                                            <input type="text" class="form-control" id="value4" v-model="option.value">
+                                        </div>
+                                        <div class="form-group col-lg-9">
+                                            <label for="valueName4">опция</label>
+                                            <input type="text" class="form-control" id="valueName4" v-model="option.value_name">
+                                        </div>
+                                    </div>
+                                    <!-- Отговор  Вариант 5 - Въпрос от отворен тип -->
+                                    <div class="row" v-else>
+                                        <div class="form-group col-lg-2"></div>
+                                        <div class="form-group col-lg-8">
+                                            <label for="text5">текст</label>
+                                            <input type="text" class="form-control" id="text5" v-model="option.value">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Въпрос тип 5 - свободен отговор -->
-                        <div v-if="task.type==5">
-                            <div class="row mt-5"></div>
-                            <div class="row" v-for="(option, idx) in task.options">
-                                <div class="col-lg-2" v-if="idx==0"></div>
-                                <div class="col-lg-10" v-if="idx==0">
-                                    <div class="input-group input-group-sm mb-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"
-                                              :id="'basic-addon_'+item.id+'_'+task.id+'_'+option.id">ОТГОВОР:</span>
-                                        </div>
-                                        <input type="text" class="form-control"
-                                             :aria-label="'basic-addon_'+item.id+'_'+task.id+'_'+option.id"
-                                             aria-describedby="inputGroup-sizing-sm"
-                                             v-model="option.value_t">
+                            <!-- Ако няма отговор -->
+                            <div class="card  card-header-actions mb-3">
+                                <div class="card-header">
+                                    ___
+                                    <div>
+                                        <button class="btn btn-outline-success" type="button" @click="addEmptyOption">Добави отговор</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        <!-- въпрос -------------------------------- -->
-        </div>
-        <!-- Оценка -->
-        <div class="card mb-4" v-if="status == 2">
-            <div class="card-header">
-                <h3>Резултат:</h3>
-            </div>
-            <div class="card-body mb-5 mt-5">
-                <hr>
-                <div style="text-align: center">
-                    <h3>{{ total }} от {{points_total_max}}&nbsp точки</h3>
-                    <h1 :class="{'bg-red': rate<3, 'bg-yellow': (rate>2.99)&&(rate<3.5), 'bg-teal': (rate>3.49)&&(rate<4.5),
-                 'bg-blue': (rate>4.49)&&(rate<5.5), 'bg-green': rate>5.49}">Оценка: {{rate}}</h1>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" type="button" data-dismiss="modal" @click="reloadItem()">Затвори</button>
+                    <button class="btn btn-success" type="button" data-dismiss="modal" @click="save()">&nbsp;Запази&nbsp;</button>
                 </div>
-                <hr>
             </div>
         </div>
     </div>
-    <!-- Странично меню -->
-    <div class="col-lg-4">
-        <div class="nav-sticky card" style="position: sticky;">
-            <div class="btn btn-success">
-                <h1 class="page-header-title"><br>
-                    <span class="badge badge-success">
-                    {{ (timer.h<10)?'0'+timer.h:timer.h }}:{{ (timer.m<10)?'0'+timer.m:timer.m }}:{{ (timer.s<10)?'0'+timer.s:timer.s }}
-                    </span>
-                </h1>
+
+    <!-- списък на въпросите по теми -->
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card mb-4"  v-for="(item, item_idx) in themes">
+                <div class="card-body">
+                    <div class="card card-header-actions mx-auto border-cyan mb-6">
+                        <div class="card-header" :id="'item'+item.id">
+                            <div>
+                                Тема "{{ item.name }}"
+                            </div>
+                            <div>
+                                <button class="btn btn-outline-primary"
+                                        type="button"
+                                        @click="make_new_q(item.id, 1)">
+                                    Добави нов въпрос
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card card-header-actions mx-auto border-cyan mb-4" v-if="!item.question_theme.length">
+                                <div class="card-body ">
+                                    <hr>
+                                    <div style="text-align: center; color: red">Няма създадени въпроси по тази тема</div>
+                                    <hr>
+                                </div>
+                            </div>
+                            <div class="card card-header-actions mx-auto border-cyan mb-4"
+                                 v-else
+                                 v-for="(task, task_idx) in item.question_theme">
+                                <div class="card-header">
+                                    Въпрос #{{ task.id }}
+                                    <!-- група -->
+                                    <div v-if="task.level==1"> Ниво: <span style="color: cyan">Знание</span> </div>
+                                    <div v-if="task.level==2"> Ниво: <span style="color: blue">Разбиране</span> </div>
+                                    <div v-if="task.level==3"> Ниво: <span style="color: purple">Приложение</span> </div>
+                                    <div v-if="task.level==4"> Ниво: <span style="color: pink">Анализ</span> </div>
+                                    <!-- маркери -->
+                                </div>
+                                <div class="card-body">
+                                    <h4> {{ task.text }}</h4>
+                                    <!-- Въпрос тип 1 - затворен без картинка -->
+                                    <div v-if="task.type==1">
+                                        <div class="row mt-5">
+                                            <div class="col-lg-1"></div>
+                                            <div class="col-lg-11">
+                                                <div class="custom-control custom-checkbox" v-for="option in task.options">
+                                                    <input class="custom-control-input text-green"
+                                                           :id="'customCheck_'+item.id+'_'+task.id+'_'+option.id"
+                                                           type="checkbox" disabled="" :checked="option.checked">
+                                                    <label class="custom-control-label"
+                                                           :class="{'text-green': option.checked, 'text-orange': !option.checked}"
+                                                           :for="'customCheck_'+item.id+'_'+task.id+'_'+option.id">
+                                                        {{ option.leading_char+'. '+option.text}}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Въпрос тип 2 - затворен с картинка -->
+                                    <div v-if="task.type==2">
+                                        <div class="row mt-5">
+                                            <div class="col-lg-5">
+                                                <img class="img-fluid" :src="task.picture">
+                                            </div>
+                                            <div class="col-lg-1"></div>
+                                            <div class="col-lg-6">
+                                                <div class="custom-control custom-checkbox" v-for="option in task.options">
+                                                    <input class="custom-control-input text-green"
+                                                           :id="'customCheck_'+item.id+'_'+task.id+'_'+option.id"
+                                                           type="checkbox" disabled="" :checked="option.checked">
+                                                    <label class="custom-control-label"
+                                                           :class="{'text-green': option.checked, 'text-orange': !option.checked}"
+                                                           :for="'customCheck_'+item.id+'_'+task.id+'_'+option.id">
+                                                        {{ option.leading_char+'. '+option.text}}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-1"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Въпрос тип 3 - Въпрос със съпоставяне -->
+                                    <div v-if="task.type==3">
+                                        <div class="row mt-5"> </div>
+                                        <div class="row" v-for="option in task.options">
+                                            <div class="col-lg-5">
+                                                {{ option.leading_char }}. {{ option.text }}
+                                            </div>
+                                            <div class="col-lg-7">
+                                                <span class="btn btn-outline-success" type="button">{{ option.value }}</span>&nbsp;
+                                                {{ option.value_name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Въпрос тип 4 - съпоставяне от картинка -->
+                                    <div v-if="task.type==4">
+                                        <div class="row mt-5">
+                                            <div class="col-lg-5">
+                                                <img class="img-fluid" :src="task.picture">
+                                            </div>
+                                            <div class="col-lg-1"></div>
+                                            <div class="col-lg-5">
+                                                <div class="row" v-for="option in task.options">
+                                                    <div>
+                                                        <span class="btn btn-outline-success" type="button">{{ option.value }}</span>&nbsp;
+                                                        {{ option.value_name }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-1"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Въпрос тип 5 - свободен отговор -->
+                                    <div v-if="task.type==5">
+                                        <div class="row mt-5"><div>Допустими отговори:</div> </div>
+                                        <div class="row" v-for="(option, idx) in task.options">
+                                            <div class="col-lg-2">
+
+                                            </div>
+                                            <div class="col-lg-10">
+                                                <span class="badge badge-success">{{idx+1}}</span> {{ option.value }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--  бутони  "изтрий" и " промени"  -->
+                                <div class="card-footer">
+                                    <div class="row align-items-between">
+                                        <div class="col-lg-6"> </div>
+                                        <div class="col-lg-3">
+                                            <button class="btn btn-outline-red" type="button" @click="deleteTask(task.id, 1)"><!-- 1 e НИВО -->
+                                                &nbsp;Изтрий&nbsp;
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <button class="btn btn-outline-green" type="button"
+                                                    @click="make_q(item_idx, task_idx)"
+                                                    data-toggle="modal" data-target="#exampleModalCenter">
+                                                Промени
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="mt-5"  style="text-align: center;">
-                <button class="btn btn-outline-success  btn-lg" type="button" v-if="!(status == 1)"
-                        style="text-align: center;" @click="startTest">
-                    &nbsp;Стартирай тест&nbsp;
-                </button>
-                <button class="btn btn-outline-red  btn-lg" type="button" v-if="status == 1"
-                        style="text-align: center;" @click="stopTest">
-                    &nbsp;Край на теста&nbsp;
-                </button>
-            </div>
-            <div class="mt-5">
-                &nbsp;&nbsp;
+        </div>
+        <!-- Странично меню -->
+        <div class="col-lg-3">
+            <div class="nav-sticky card" style="position: sticky;">
+                <div class="card-body mb-n4" v-for="item in themes">
+                    {{ item.name }}
+                    <ul class="nav flex-column mb-2">
+                        <li class="nav-item" v-if="item.knowledge>0">
+                            <a class="nav-link" :href="'#itemknowledge'+item.item">
+                                Знание
+                                <span  class="badge badge-danger" v-if="(item.tasks_knowledge.length < item.knowledge)">
+                                    {{ item.tasks_knowledge.length }} ( мин. {{ item.knowledge }} )
+                                </span>
+                                <span  class="badge badge-warning" v-else-if="(item.tasks_knowledge.length < 3*item.knowledge)">
+                                    {{ item.tasks_knowledge.length }} ( мин. {{ item.knowledge }} )
+                                </span>
+                                <span  class="badge badge-success" v-else>
+                                    {{ item.tasks_knowledge.length }} ( мин. {{ item.knowledge }} )
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item" v-if="item.comprehension>0">
+                            <a class="nav-link" :href="'#itemcomprehension'+item.item">
+                                Разбиране
+                                <span  class="badge badge-danger" v-if="(item.tasks_comprehension.length < item.comprehension)">
+                                    {{ item.tasks_comprehension.length }} ( мин. {{ item.comprehension }} )
+                                </span>
+                                <span  class="badge badge-warning" v-else-if="(item.tasks_comprehension.length < 3*item.comprehension)">
+                                    {{ item.tasks_comprehension.length }} ( мин. {{ item.comprehension }} )
+                                </span>
+                                <span  class="badge badge-success" v-else>
+                                    {{ item.tasks_comprehension.length }} ( мин. {{ item.comprehension }} )
+                                </span>
+                           </a>
+                        </li>
+                        <li class="nav-item" v-if="item.application>0">
+                            <a class="nav-link" :href="'#itemapplication'+item.item">
+                                Приложение
+                                <span  class="badge badge-danger" v-if="(item.tasks_application.length < item.application)">
+                                    {{ item.tasks_application.length }} ( мин. {{ item.application }} )
+                                </span>
+                                <span  class="badge badge-warning" v-else-if="(item.tasks_application.length < 3*item.application)">
+                                    {{ item.tasks_application.length }} ( мин. {{ item.application }} )
+                                </span>
+                                <span  class="badge badge-success" v-else>
+                                    {{ item.tasks_application.length }} ( мин. {{ item.application }} )
+                                </span>
+                            </a>
+                        </li>
+                        <li class="nav-item" v-if="item.analysis>0">
+                            <a class="nav-link" :href="'#itemanalysis'+item.item">
+                                Анализ
+                                <span  class="badge badge-danger" v-if="(item.tasks_analysis.length < item.analysis)">
+                                    {{ item.tasks_analysis.length }} ( мин. {{ item.analysis }} )
+                                </span>
+                                <span  class="badge badge-warning" v-else-if="(item.tasks_analysis.length < 3*item.analysis)">
+                                    {{ item.tasks_analysis.length }} ( мин. {{ item.analysis }} )
+                                </span>
+                                <span  class="badge badge-success" v-else>
+                                    {{ item.tasks_analysis.length }} ( мин. {{ item.analysis }} )
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                        <div class="mb-2">&nbsp;</div>
             </div>
         </div>
     </div>
 </div>
-
 {% endverbatim %}
 
 {% endblock %}
@@ -213,5 +442,5 @@
 {% block scripts %}
         <script src="https://unpkg.com/vue@3"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script src="{% static 'js/test.js' %}"></script>
+        <script src="{% static 'js/lib_edit.js' %}"></script>
 {% endblock %}
