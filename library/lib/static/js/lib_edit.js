@@ -8,6 +8,8 @@ const App = {
         theme_name: '',
         subject_id: 0,
         subject_name: '',
+        question_item: 0,
+        question_id: 0,
 
         editMode: EDIT_NEW_QUESTION,
         current_item: 0,
@@ -38,23 +40,22 @@ const App = {
         onImageChange(e){
             const file = e.target.files[0]
             this.question.picture = URL.createObjectURL(file)
-            this.themes[this.question.item].picture = URL.createObjectURL(file)
+            console.log('1. '+this.question_item)
+            console.log('2. '+this.themes)
+            console.log('3. '+this.themes[this.question_item])
+            this.themes[this.question_item].question_theme[this.question_id].picture = URL.createObjectURL(file)
             let formData = new FormData();
             formData.append('id', this.question.id)
             formData.append('picture', file)
-            let url = ''
-            const lvl=this.current_level
-            if (lvl == 1){url = '/api/TaskKnowledgeFile/'}
-            else if (lvl == 2){url = '/api/TaskComprehensionFile/'}
-            else if (lvl == 3){url = '/api/TaskApplicationFile/'}
-            else if (lvl == 4){url = '/api/TaskAnalysisFile/'}
+            let url = '/api/question_file/'
             axios.post(url, formData, {headers: {'X-CSRFToken':CSRF_TOKEN, 'Content-Type': 'multipart/form-data'}})
         },
         make_q(itm, id/* OK */){ // превключва въпрос в режим на редактиране
             // itm  е № на темата, а № е id на въпроса
             const vm = this;
             vm.current_item = vm.themes[itm].id
-            vm.question.item = itm
+            vm.question_item = itm
+            vm.question_ids = id
             vm.question = vm.themes[itm].question_theme[id]
             if (vm.question.level == 1){
                 this.level_name = 'Знание'
@@ -88,7 +89,7 @@ const App = {
                 console.log('success - item was created');
                 console.log('response ', response.data)
                 const id=response.data
-                axios.get('/api/q_themes/'+this.subject_id+'/'+this.theme_id+'/')
+                axios.get('/api/q_themes/'+this.subject_id+'/')
                     .then(function(response){
                         vm.themes = response.data
                     })
@@ -141,7 +142,7 @@ const App = {
                 throw("Error: ",error);
             })
         },
-        saveOption(i/* OK ?? */){
+        saveOption(i){
             vm = this
             axios({
                 method:'POST',
@@ -164,9 +165,8 @@ const App = {
                 }
             })
             .then(response => {
-                txt = 'Запазени промени във въпрос по тема'+vm.theme.num+' ; въпрос id='+vm.question.id+')'
+                txt = 'Запазени промени във въпрос id='+vm.question.id
                 console.log(txt)
-                window.alert(txt)
             })
             .catch(error => {
                 throw("Error: ",error);
@@ -223,9 +223,9 @@ const App = {
                 throw("Error: ",error);
             })
         },
-        reloadItem(/* OK */){
+        reloadItem(){
             vm = this
-            axios.get('/api/q_themes/'+this.subject_id+'/'+this.theme_id+'/')
+            axios.get('/api/q_themes/'+this.subject_id+'/')
             .then(function(response){
                 vm.themes = response.data;
                 for (i in vm.themes){

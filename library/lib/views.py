@@ -208,8 +208,9 @@ class ThemesBySubjectSerializerView(APIView):
 # Връща списък на всички въпроси по теми от предмет
 class QuestionsByThemesSerializerView(APIView):
     @staticmethod
-    def get(request, sb, th):
+    def get(request, sb):
         queryset = Theme.objects.filter(subject_id=sb).order_by('order')
+        print(queryset)
         serializer = QuestionsByThemesSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
