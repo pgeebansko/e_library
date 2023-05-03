@@ -50,6 +50,7 @@ const App = {
         },
         loadTheme(){
             vm = this
+            console.log('/api/test/'+this.subject_id+'/'+this.theme_id+'/')
             axios.get('/api/test/'+this.subject_id+'/'+this.theme_id+'/')
             .then(function(response){
                 vm.test = response.data[0];

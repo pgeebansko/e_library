@@ -190,3 +190,5 @@ class TestsSettings(models.Model):
     class Meta:
         verbose_name = 'Параметър'
         verbose_name_plural = 'Параметри'
+
+
