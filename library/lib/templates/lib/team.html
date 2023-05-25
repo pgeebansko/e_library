@@ -1,0 +1,32 @@
+{% extends 'lib/common.html' %}
+{% load static %}
+{% block page_content %}
+                <!-- Page Header-->
+                <header class="page-header-ui page-header-ui-light bg-white">
+                    <div class="page-header-ui-content pt-5">
+                        <div class="container px-5">
+                            <div class="row gx-5 align-items-center">
+                                <div class="col-lg-6" data-aos="fade-up">
+                                    <h1 class="page-header-ui-title">Екип
+                                    </h1>
+                                    {% for t in team %}
+                                    <p class="page-header-ui-text mb-5">
+                                        {{t.FirstName}} {{t.LastName}}
+                                    </p>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-lg-6 d-none d-lg-block" data-aos="fade-up" data-aos-delay="100">
+                                    <img class="img-fluid" src="{% static 'assets/img/theme_adds/logo_img.png' %}" alt="..." />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="svg-border-rounded text-light">
+                        <!-- Rounded SVG Border-->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 144.54 17.34" preserveAspectRatio="none"
+                            fill="currentColor">
+                            <path d="M144.54,17.34H0V0H144.54ZM0,0S32.36,17.34,72.27,17.34,144.54,0,144.54,0"></path>
+                        </svg>
+                    </div>
+                </header>
+{% endblock %}

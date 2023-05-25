@@ -10,10 +10,23 @@ from .serializers import *
 def index(request):
     classes = Klas.objects.order_by('class_num')
     professions = Speciality.objects.order_by('id')
+    team = Team.objects.order_by('id')
     context = {'classes': classes,
                'professions': professions,
+               'team': team,
                }
     return render(request, 'lib/index.html', context)
+
+
+def team_list(request):
+    classes = Klas.objects.order_by('class_num')
+    professions = Speciality.objects.order_by('id')
+    team = Team.objects.order_by('id')
+    context = {'classes': classes,
+               'professions': professions,
+               'team': team,
+               }
+    return render(request, 'lib/team.html', context)
 
 
 class BooksByClass(View):

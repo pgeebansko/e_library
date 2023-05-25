@@ -20,6 +20,19 @@ class Klas(models.Model):
         verbose_name_plural = 'Класове'
 
 
+# списък членове на екипа
+class Team(models.Model):
+    FirstName = models.CharField('Собствено име', default='', max_length=50)
+    LastName = models.CharField('Фамилно име', default='', max_length=50)
+
+    def __str__(self):
+        return self.FirstName+' '+self.LastName
+
+    class Meta:
+        verbose_name = 'Член на екипа'
+        verbose_name_plural = 'Членове на екипа'
+
+
 # списък специалности
 class Speciality(models.Model):
     name = models.CharField('Наименование', max_length=50)

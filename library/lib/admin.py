@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Speciality, Klas, Subject, Article, Theme, Attacment, Link, QuestionText, QuestionItem, \
-    TestsSettings
+    TestsSettings, Team
 
 """
 added superuser
@@ -15,6 +15,7 @@ admin.site.register(Attacment)
 admin.site.register(Article)
 admin.site.register(Theme)
 admin.site.register(Link)
+admin.site.register(Team)
 
 
 @admin.register(QuestionText)
